@@ -1,21 +1,29 @@
-import * as React from 'react'
+import { useEffect } from 'react';
 
-export const useMyHook = () => {
-  let [{
-    counter
-  }, setState] = React.useState({
-    counter: 0
-  })
+const mousemoveHandler = e => {
+  window.parent.postMessage('iframe-mousemove', '*');
+};
 
-  React.useEffect(() => {
-    let interval = window.setInterval(() => {
-      counter++
-      setState({counter})
-    }, 1000)
-    return () => {
-      window.clearInterval(interval)
+const keypressHandler = e => {
+  window.parent.postMessage('iframe-keypress', '*');
+};
+
+const clickHandler = e => {
+  window.parent.postMessage('iframe-click', '*');
+};
+
+export function useActivityDispatcher() {
+  useEffect(() => {
+    if (window.parent) {
+      window.addEventListener('mousemove', mousemoveHandler);
+      window.addEventListener('keypress', keypressHandler);
+      window.addEventListener('click', clickHandler);
     }
-  }, [])
 
-  return counter
+    return () => {
+      window.removeEventListener('mousemove', mousemoveHandler);
+      window.removeEventListener('keypress', mousemoveHandler);
+      window.removeEventListener('click', mousemoveHandler);
+    };
+  }, []);
 }
