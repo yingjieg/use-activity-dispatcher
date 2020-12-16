@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
 
-const mousemoveHandler = e => {
+function mousemoveHandler(e) {
   window.parent.postMessage('iframe-mousemove', '*');
-};
+}
 
-const keypressHandler = e => {
+function keypressHandler(e) {
   window.parent.postMessage('iframe-keypress', '*');
-};
+}
 
-const clickHandler = e => {
+function clickHandler(e) {
   window.parent.postMessage('iframe-click', '*');
-};
+}
 
 export function useActivityDispatcher() {
   useEffect(() => {
@@ -22,8 +22,8 @@ export function useActivityDispatcher() {
 
     return () => {
       window.removeEventListener('mousemove', mousemoveHandler);
-      window.removeEventListener('keypress', mousemoveHandler);
-      window.removeEventListener('click', mousemoveHandler);
+      window.removeEventListener('keypress', keypressHandler);
+      window.removeEventListener('click', clickHandler);
     };
   }, []);
 }
