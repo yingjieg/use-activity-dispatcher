@@ -1,29 +1,50 @@
 import { useEffect } from 'react';
 
-function mousemoveHandler(e) {
-  window.parent.postMessage('iframe-mousemove', '*');
-}
+import { DEFAULT_ELEMENT, DEFAULT_EVENTS, IS_BROWSER } from './utils';
 
-function keypressHandler(e) {
-  window.parent.postMessage('iframe-keypress', '*');
-}
+const handleEvent = e => {
+  window.parent.postMessage(`iframe-${e.type}`, '*');
+};
 
-function clickHandler(e) {
-  window.parent.postMessage('iframe-click', '*');
-}
+export function useActivityDispatcher({
+  events = DEFAULT_EVENTS,
+  element = DEFAULT_ELEMENT,
+  capture = true,
+  passive = true,
+} = {}) {
+  const _bindEvents = () => {
+    if (!IS_BROWSER) {
+      return;
+    }
 
-export function useActivityDispatcher() {
+    events.forEach(e => {
+      element.addEventListener(e, handleEvent, {
+        capture,
+        passive,
+      });
+    });
+  };
+
+  const _unbindEvents = (force = false) => {
+    if (!IS_BROWSER) {
+      return;
+    }
+
+    events.forEach(e => {
+      element.removeEventListener(e, handleEvent, {
+        capture,
+        passive,
+      });
+    });
+  };
+
   useEffect(() => {
     if (window.parent) {
-      window.addEventListener('mousemove', mousemoveHandler);
-      window.addEventListener('keypress', keypressHandler);
-      window.addEventListener('click', clickHandler);
+      _bindEvents();
     }
 
     return () => {
-      window.removeEventListener('mousemove', mousemoveHandler);
-      window.removeEventListener('keypress', keypressHandler);
-      window.removeEventListener('click', clickHandler);
+      _unbindEvents();
     };
   }, []);
 }

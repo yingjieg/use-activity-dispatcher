@@ -14,6 +14,7 @@
 
     // allow specifying true explicitly for boolean props
     "react/jsx-boolean-value": 0,
-    "semi": [2, "always"]
+    "semi": [2, "always"],
+    "comma-dangle": ["error", "always-multiline"]
   }
 }
